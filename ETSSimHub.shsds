@@ -1,0 +1,100 @@
+{
+  "AutomaticReconnect": false,
+  "SerialPortName": "COM7",
+  "StartupDelayMs": 20,
+  "IsConnecting": false,
+  "IsEnabled": true,
+  "LogIncomingData": true,
+  "IsConnected": true,
+  "BaudRate": 9600,
+  "DtrEnable": true,
+  "RtsEnable": true,
+  "EditorExpanded": true,
+  "Name": "Custom Serial device",
+  "Description": "Serial device",
+  "LastErrorDate": "2026-03-09T19:00:13.1295087+00:00",
+  "LastErrorMessage": null,
+  "IsFreezed": false,
+  "SettingsBuilder": {
+    "Settings": [],
+    "IsEditMode": true
+  },
+  "OnConnectMessage": {
+    "Expression": ""
+  },
+  "OnDisconnectMessage": {
+    "Expression": ""
+  },
+  "UpdateMessages": [
+    {
+      "Message": {
+        "Expression": "'!fuel*' + Round([Fuel],0)+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!max_fuel*' + [MaxFuel] + '\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!fuel_percent*' + Round([FuelPercent],2) + '%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!fuel_range*' + Round([GameRawData.TruckValues.CurrentValues.DashboardValues.FuelValue.Range],0) + '\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!dam_cabin*'+(round([GameRawData.TruckValues.CurrentValues.DamageValues.Cabin],2)*100)+'%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!dam_chassis*'+(round([GameRawData.TruckValues.CurrentValues.DamageValues.Chassis],2)*100)+'%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!dam_engine*'+(round([GameRawData.TruckValues.CurrentValues.DamageValues.Engine],2)*100)+'%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!dam_trans*'+(round([GameRawData.TruckValues.CurrentValues.DamageValues.Transmission],2)*100)+'%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "'!dam_wheels*'+(round([GameRawData.TruckValues.CurrentValues.DamageValues.WheelsAvg],2)*100)+'%\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 5
+    },
+    {
+      "Message": {
+        "Expression": "[Settings.Bool]"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 60
+    }
+  ]
+}
