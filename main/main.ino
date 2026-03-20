@@ -46,8 +46,7 @@ char valueBuffer[VALUE_MAX];
 uint8_t keyPos = 0;
 uint8_t valPos = 0;
 
-enum ParseState
-{
+enum ParseState {
   WAIT_START,
   READ_KEY,
   READ_VALUE
@@ -87,18 +86,15 @@ const uint8_t FIELD_COUNT = sizeof(fields) / sizeof(Field);
 
 //-------- SAFE COPY --------/
 // Just ensure NULL terminator
-void safeCopy(char *dest, const char *src, size_t size)
-{
+void safeCopy(char *dest, const char *src, size_t size) {
   size_t i = 0;
-
   strncpy(dest, src, size - 1);
   dest[size - 1] = '\0';  
 }
 
 //-------- SCREEN CHANGE --------/
 
-void changeScreen(int dir)
-{
+void changeScreen(int dir) {
   int next = currentScreen + dir;
 
   if (next > MAX_SCREEN) next = MIN_SCREEN;
@@ -108,24 +104,18 @@ void changeScreen(int dir)
 
   tft.fillScreen(ILI9341_BLACK);
   
-  // force redraw
-  for (uint8_t i = 0; i < FIELD_COUNT; i++)
-  {
+  // force redraw - by setting last value to nil
+  for (uint8_t i = 0; i < FIELD_COUNT; i++) {
     fields[i].lastValue[0] = '\0';
   }
 }
 
 //-------- SERIAL COMMIT --------/
-// TODO used if statements for ease of initial set up
-// to review can we reference directly?
-// lso requires 3 changes to add new value - Telemetry, commit and screen
 
-void commitValue()
-{
-  for (uint8_t i = 0; i < FIELD_COUNT; i++)
-  {
-    if (strcmp(keyBuffer, fields[i].key) == 0)
-    {
+
+void commitValue() {
+  for (uint8_t i = 0; i < FIELD_COUNT; i++) {
+    if (strcmp(keyBuffer, fields[i].key) == 0) {
       safeCopy(fields[i].value, valueBuffer, sizeof(fields[i].value));
       return;
     }
@@ -134,17 +124,13 @@ void commitValue()
 
 //-------- SERIAL PARSER --------/
 
-void readSerial()
-{
-  while (Serial.available())
-  {
+void readSerial() {
+  while (Serial.available()) {
     char c = Serial.read();
 
-    switch (parserState)
-    {
+    switch (parserState) {
       case WAIT_START:
-        if (c == '!')
-        {
+        if (c == '!') {
           keyPos = 0;
           valPos = 0;
           parserState = READ_KEY;
@@ -153,27 +139,23 @@ void readSerial()
 
       case READ_KEY:
 
-        if (c == '*')
-        {
+        if (c == '*') {
           keyBuffer[keyPos] = 0;
           parserState = READ_VALUE;
         }
-        else if (keyPos < KEY_MAX - 1)
-        {
+        else if (keyPos < KEY_MAX - 1) {
           keyBuffer[keyPos++] = c;
         }
       break;
 
       case READ_VALUE:
 
-        if (c == '\n')
-        {
+        if (c == '\n') { 
           valueBuffer[valPos] = 0;
           commitValue();
           parserState = WAIT_START;
-        }
-        else if (valPos < VALUE_MAX - 1)
-        {
+        } 
+        else if (valPos < VALUE_MAX - 1) {
           valueBuffer[valPos++] = c;
         }
       break;
@@ -184,12 +166,10 @@ void readSerial()
 //-------- TOUCH --------/
 // handles touch screen for changing screen
 
-void readTouch()
-{
+void readTouch() {
   uint16_t x, y, z1, z2;
 
-  if (ts.read_touch(&x, &y, &z1, &z2) && z1 > TS_MIN_PRESSURE)
-  {
+  if (ts.read_touch(&x, &y, &z1, &z2) && z1 > TS_MIN_PRESSURE) {
     if (y < 1200) changeScreen(-1);
     if (y > 2300) changeScreen(1);
   }
@@ -197,9 +177,8 @@ void readTouch()
 
 //-------- PARTIAL DRAW HELPERS --------/
 
-void drawField(Field &f, int y)
-{
-  if (strcmp(f.value, f.lastValue) == 0) return;
+void drawField(Field &f, uint16_t y) {
+  if (strcmp(f.value, f.lastValue) == 0) return; //No value change so don't print field
 
   safeCopy(f.lastValue, f.value, sizeof(f.lastValue));
 
@@ -213,7 +192,7 @@ void drawField(Field &f, int y)
   tft.setTextSize(3);
 
   tft.print(f.label);
-  tft.print("     ");
+  // tft.print("     ");
   tft.setCursor(150, y);
   //tft.print("        ");
   //tft.setCursor(x + 150, y);
@@ -224,10 +203,8 @@ void drawField(Field &f, int y)
 
 //-------- DRAW --------/
 
-void drawScreen()
-{
-  if (currentScreen == SCREEN_MAIN) // Initial screen
-  {
+void drawScreen() {
+  if (currentScreen == SCREEN_MAIN) { // Initial screen 
     tft.setCursor(0,0);
     tft.setTextSize(3);
     tft.setTextColor(ILI9341_WHITE);
@@ -237,11 +214,8 @@ void drawScreen()
   uint16_t space = 40;
   uint16_t y = 40;
 
-  for (uint8_t i = 0; i < FIELD_COUNT; i++)
-
-  {
-    if (fields[i].screen == currentScreen)
-    {
+  for (uint8_t i = 0; i < FIELD_COUNT; i++) {
+    if (fields[i].screen == currentScreen) {
       drawField(fields[i], y);
       y += space;
     }
@@ -251,16 +225,14 @@ void drawScreen()
 
 //-------- SETUP --------/
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
 
   tft.begin();
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
 
-  if (!ts.begin())
-  {
+  if (!ts.begin())   {
     Serial.println("Touch failed");
     while(1);
   }
